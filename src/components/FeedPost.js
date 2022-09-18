@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import LikeImage from "../../assets/images/like.png";
 import {
   Entypo,
@@ -6,12 +6,20 @@ import {
   FontAwesome5,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { useState } from "react";
 
 const FeedPost = ({ post }) => {
+  const navigation = useNavigation();
+
+  const [isLiked, setIsLiked] = useState(false);
+
   return (
     <View style={styles.post}>
-      {/* header */}
-      <View style={styles.header}>
+      <Pressable
+        style={styles.header}
+        onPress={() => navigation.navigate("Profile", { id: post.User.id })}
+      >
         <Image source={{ uri: post.User.image }} style={styles.profileImage} />
         <View>
           <Text style={styles.name}>{post.User.name}</Text>
@@ -23,17 +31,13 @@ const FeedPost = ({ post }) => {
           color="gray"
           style={styles.icon}
         />
-      </View>
-
-      {/* body */}
+      </Pressable>
       {post.description && (
         <Text style={styles.description}>{post.description}</Text>
       )}
       {post.image && (
         <Image source={{ uri: post.image }} style={styles.image} />
       )}
-
-      {/* footer */}
       <View style={styles.footer}>
         <View style={styles.statsRow}>
           <Image source={LikeImage} style={styles.likeIcon} />
@@ -44,10 +48,24 @@ const FeedPost = ({ post }) => {
         </View>
       </View>
       <View style={styles.buttonsRow}>
-        <View style={styles.iconButton}>
-          <AntDesign name="like2" size={18} color="gray" />
-          <Text style={styles.iconButtonText}>Like</Text>
-        </View>
+        <Pressable
+          style={styles.iconButton}
+          onPress={() => setIsLiked(!isLiked)}
+        >
+          <AntDesign
+            name="like2"
+            size={18}
+            color={isLiked ? "royalblue" : "gray"}
+          />
+          <Text
+            style={[
+              styles.iconButtonText,
+              { color: isLiked ? "royalblue" : "gray" },
+            ]}
+          >
+            Like
+          </Text>
+        </Pressable>
         <View style={styles.iconButton}>
           <FontAwesome5 name="comment-alt" size={18} color="gray" />
           <Text style={styles.iconButtonText}>Comment</Text>
