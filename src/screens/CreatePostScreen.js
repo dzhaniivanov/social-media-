@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Entypo } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { useNavigation } from "@react-navigation/native";
-import { DataStore,Auth } from "aws-amplify";
+import { DataStore, Auth } from "aws-amplify";
 import { Post } from "../models";
 
 const user = {
@@ -40,12 +40,13 @@ const CreatePostScreen = () => {
       numberOfLikes: 0,
       numberOfShares: 0,
       postUserId: userData.attributes.sub,
-      _version: 1,
+      _version: 1, //optional
     });
 
-    await DataStore.save(newPost)
+    await DataStore.save(newPost);
 
     setDescription("");
+    setImage(null);
     navigation.goBack();
   };
 

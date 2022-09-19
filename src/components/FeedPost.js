@@ -18,11 +18,11 @@ const FeedPost = ({ post }) => {
     <View style={styles.post}>
       <Pressable
         style={styles.header}
-        onPress={() => navigation.navigate("Profile", { id: post.User.id })}
+        onPress={() => navigation.navigate("Profile", { id: post.postUserId })}
       >
-        <Image source={{ uri: post.User.image }} style={styles.profileImage} />
+        <Image source={{ uri: post.User?.image }} style={styles.profileImage} />
         <View>
-          <Text style={styles.name}>{post.User.name}</Text>
+          <Text style={styles.name}>{post.User?.name}</Text>
           <Text style={styles.subtitle}>{post.createdAt}</Text>
         </View>
         <Entypo
