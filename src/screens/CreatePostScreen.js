@@ -13,6 +13,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Entypo } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { useNavigation } from "@react-navigation/native";
+import { DataStore,Auth } from "aws-amplify";
+import { Post } from "../models";
 
 const user = {
   id: "u1",
@@ -29,10 +31,21 @@ const CreatePostScreen = () => {
 
   const insets = useSafeAreaInsets();
 
-  const onSubmit = () => {
-    console.warn("on submit", description);
-    setDescription("");
+  const onSubmit = async () => {
+    const userData = await Auth.currentAuthenticatedUser();
 
+    const newPost = new Post({
+      description,
+      //image
+      numberOfLikes: 0,
+      numberOfShares: 0,
+      postUserId: userData.attributes.sub,
+      _version: 1,
+    });
+
+    await DataStore.save(newPost)
+
+    setDescription("");
     navigation.goBack();
   };
 
@@ -43,7 +56,6 @@ const CreatePostScreen = () => {
       aspect: [4, 3],
       quality: 1,
     });
-
 
     if (!result.cancelled) {
       setImage(result.uri);
