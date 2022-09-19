@@ -13,8 +13,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Entypo } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { useNavigation } from "@react-navigation/native";
-import { DataStore, Auth } from "aws-amplify";
+import { DataStore, Auth, Storage } from "aws-amplify";
 import { Post } from "../models";
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from "uuid";
 
 const user = {
   id: "u1",
@@ -34,16 +36,19 @@ const CreatePostScreen = () => {
   const onSubmit = async () => {
     const userData = await Auth.currentAuthenticatedUser();
 
-    const newPost = new Post({
+    const newPost = {
       description,
-      //image
       numberOfLikes: 0,
       numberOfShares: 0,
       postUserId: userData.attributes.sub,
       _version: 1, //optional
-    });
+    };
 
-    await DataStore.save(newPost);
+    if (image) {
+      newPost.image = await uploadFile(image);
+    }
+
+    await DataStore.save(new Post(newPost));
 
     setDescription("");
     setImage(null);
@@ -60,6 +65,20 @@ const CreatePostScreen = () => {
 
     if (!result.cancelled) {
       setImage(result.uri);
+    }
+  };
+
+  const uploadFile = async (fileUri) => {
+    try {
+      const response = await fetch(fileUri);
+      const blob = await response.blob();
+      const key = `${uuidv4()}.png`;
+      await Storage.put(key, blob, {
+        contentType: "image/png", // contentType is optional
+      });
+      return key;
+    } catch (err) {
+      console.log("Error uploading file:", err);
     }
   };
 
